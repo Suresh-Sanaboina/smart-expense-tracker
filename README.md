@@ -112,16 +112,6 @@ Open:
 http://127.0.0.1:5000
 ```
 
-## 📸 Screenshots
-
-Add screenshots of:
-
-* Login page
-* Dashboard
-* Expense management
-* Budget tracking
-* Analytics
-
 ## 🎯 Project Objective
 
 The goal of this project is to provide a simple and user-friendly platform for tracking personal finances and understanding spending habits through budgets, analytics, and reports.
