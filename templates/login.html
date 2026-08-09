@@ -1,0 +1,446 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Login - Smart Expense Tracker</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <div class="auth-card">
+
+        <h1>Smart Expense Tracker</h1>
+
+        <h2>Login</h2>
+
+        <p>
+            Login to manage your expenses.
+        </p>
+
+        <!-- LOGIN FORM -->
+
+        <form id="loginForm">
+
+            <input
+                type="text"
+                id="loginUsername"
+                placeholder="Username"
+                autocomplete="username"
+                required
+            >
+
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit">
+                Login
+            </button>
+
+        </form>
+
+
+        <!-- REGISTER LINK -->
+
+        <p class="auth-link">
+
+            Don't have an account?
+
+            <a href="#" onclick="showRegister(); return false;">
+                Create account
+            </a>
+
+        </p>
+
+
+        <!-- REGISTER SECTION -->
+
+        <div
+            id="registerSection"
+            class="hidden"
+        >
+
+            <h2>Create Account</h2>
+
+            <form id="registerForm">
+
+                <input
+                    type="text"
+                    id="registerUsername"
+                    placeholder="Username"
+                    autocomplete="username"
+                    required
+                >
+
+                <input
+                    type="password"
+                    id="registerPassword"
+                    placeholder="Password"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Confirm Password"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <button type="submit">
+                    Register
+                </button>
+
+            </form>
+
+
+            <p class="auth-link">
+
+                Already have an account?
+
+                <a href="#" onclick="hideRegister(); return false;">
+                    Login
+                </a>
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+// =========================================================
+// LOGIN FORM
+// =========================================================
+
+const loginForm =
+    document.getElementById("loginForm");
+
+
+loginForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const username =
+            document
+                .getElementById("loginUsername")
+                .value
+                .trim();
+
+
+        const password =
+            document
+                .getElementById("loginPassword")
+                .value;
+
+
+        if (!username || !password) {
+
+            alert(
+                "Please enter username and password."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/login",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            username: username,
+
+                            password: password
+
+                        })
+
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            console.log(
+                "Login response:",
+                result
+            );
+
+
+            if (!response.ok) {
+
+                alert(
+                    "Login failed.\n\n" +
+                    "Server error:\n" +
+                    (
+                        result.error ||
+                        "Unknown server error"
+                    )
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                result.message ||
+                "Login successful!"
+            );
+
+
+            window.location.href = "/";
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Login connection error:",
+                error
+            );
+
+
+            alert(
+                "Unable to connect to the Flask server.\n\n" +
+                error.message
+            );
+
+        }
+
+    }
+);
+
+
+// =========================================================
+// REGISTER FORM
+// =========================================================
+
+const registerForm =
+    document.getElementById("registerForm");
+
+
+registerForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const username =
+            document
+                .getElementById("registerUsername")
+                .value
+                .trim();
+
+
+        const password =
+            document
+                .getElementById("registerPassword")
+                .value;
+
+
+        const confirmPassword =
+            document
+                .getElementById("confirmPassword")
+                .value;
+
+
+        if (!username || !password) {
+
+            alert(
+                "Please enter username and password."
+            );
+
+            return;
+
+        }
+
+
+        if (password !== confirmPassword) {
+
+            alert(
+                "Passwords do not match."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/register",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            username: username,
+
+                            password: password
+
+                        })
+
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            console.log(
+                "Registration response:",
+                result
+            );
+
+
+            if (!response.ok) {
+
+                alert(
+                    "Registration failed.\n\n" +
+                    "Server error:\n" +
+                    (
+                        result.error ||
+                        "Unknown server error"
+                    )
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                result.message ||
+                "Registration successful!"
+            );
+
+
+            hideRegister();
+
+
+            document
+                .getElementById("loginUsername")
+                .value = username;
+
+
+            document
+                .getElementById("loginPassword")
+                .value = "";
+
+
+            document
+                .getElementById("registerUsername")
+                .value = "";
+
+
+            document
+                .getElementById("registerPassword")
+                .value = "";
+
+
+            document
+                .getElementById("confirmPassword")
+                .value = "";
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Registration connection error:",
+                error
+            );
+
+
+            alert(
+                "Unable to connect to the Flask server.\n\n" +
+                error.message
+            );
+
+        }
+
+    }
+);
+
+
+// =========================================================
+// SHOW REGISTER
+// =========================================================
+
+function showRegister() {
+
+    document
+        .getElementById("registerSection")
+        .classList.remove("hidden");
+
+}
+
+
+// =========================================================
+// HIDE REGISTER
+// =========================================================
+
+function hideRegister() {
+
+    document
+        .getElementById("registerSection")
+        .classList.add("hidden");
+
+}
+
+</script>
+
+</body>
+
+</html>
+```

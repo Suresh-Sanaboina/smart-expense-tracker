@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Profile - Smart Expense Tracker</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <div class="auth-card">
+
+        <h1>My Profile</h1>
+
+        <p>
+            Username:
+            <strong>{{ username }}</strong>
+        </p>
+
+
+        <h2>Change Password</h2>
+
+        <form id="passwordForm">
+
+            <input
+                type="password"
+                id="currentPassword"
+                placeholder="Current Password"
+                required
+            >
+
+            <input
+                type="password"
+                id="newPassword"
+                placeholder="New Password"
+                required
+            >
+
+            <input
+                type="password"
+                id="confirmNewPassword"
+                placeholder="Confirm New Password"
+                required
+            >
+
+            <button type="submit">
+                Change Password
+            </button>
+
+        </form>
+
+
+        <br>
+
+        <a href="/" class="secondary-button">
+            Back to Dashboard
+        </a>
+
+        <a href="/logout" class="logout-button">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document
+    .getElementById("passwordForm")
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            const currentPassword =
+                document
+                    .getElementById(
+                        "currentPassword"
+                    )
+                    .value;
+
+            const newPassword =
+                document
+                    .getElementById(
+                        "newPassword"
+                    )
+                    .value;
+
+            const confirmPassword =
+                document
+                    .getElementById(
+                        "confirmNewPassword"
+                    )
+                    .value;
+
+            if (
+                newPassword !==
+                confirmPassword
+            ) {
+
+                alert(
+                    "New passwords do not match."
+                );
+
+                return;
+            }
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/change-password",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                current_password:
+                                    currentPassword,
+
+                                new_password:
+                                    newPassword
+                            })
+                        }
+                    );
+
+                const result =
+                    await response.json();
+
+                if (!response.ok) {
+
+                    alert(
+                        result.error ||
+                        "Password change failed"
+                    );
+
+                    return;
+                }
+
+                alert(
+                    result.message
+                );
+
+                document
+                    .getElementById(
+                        "passwordForm"
+                    )
+                    .reset();
+
+            }
+            catch(error) {
+
+                alert(
+                    "Unable to connect to server."
+                );
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

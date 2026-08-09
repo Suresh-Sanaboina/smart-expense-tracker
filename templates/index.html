@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Expense Tracker</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="main-header">
+
+        <div>
+
+            <h1>Smart Expense Tracker</h1>
+
+            <p>
+                Welcome,
+                <strong>{{ username }}</strong>
+            </p>
+
+        </div>
+
+        <div class="header-actions">
+
+            <a href="/profile"
+               class="secondary-button">
+                Profile
+            </a>
+
+            <a href="/logout"
+               class="logout-button">
+                Logout
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- FINANCIAL DASHBOARD -->
+
+    <section class="dashboard">
+
+        <div class="summary-card">
+            <h3>Total Income</h3>
+            <p id="totalIncome">₹0.00</p>
+        </div>
+
+        <div class="summary-card">
+            <h3>Total Expenses</h3>
+            <p id="totalAmount">₹0.00</p>
+        </div>
+
+        <div class="summary-card">
+            <h3>Balance</h3>
+            <p id="balanceAmount">₹0.00</p>
+        </div>
+
+        <div class="summary-card">
+            <h3>Total Records</h3>
+            <p id="totalRecords">0</p>
+        </div>
+
+        <div class="summary-card">
+            <h3>Highest Category</h3>
+            <p id="highestCategory">-</p>
+        </div>
+
+        <div class="summary-card">
+            <h3>Monthly Budget</h3>
+            <p id="monthlyBudget">₹0.00</p>
+        </div>
+
+        <div class="summary-card">
+            <h3>Remaining Budget</h3>
+            <p id="remainingBudget">₹0.00</p>
+        </div>
+
+    </section>
+
+
+    <!-- BUDGET WARNING -->
+
+    <section id="budgetWarning"
+             class="budget-warning hidden">
+
+    </section>
+
+
+    <!-- BUDGET PROGRESS -->
+
+    <section class="budget-section">
+
+        <div class="section-header">
+
+            <h2>Budget Progress</h2>
+
+            <span id="budgetPercentage">
+                0%
+            </span>
+
+        </div>
+
+        <div class="progress-container">
+
+            <div id="budgetProgress"
+                 class="progress-bar">
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ANALYTICS -->
+
+    <section class="analytics-section">
+
+        <div class="analytics-header">
+
+            <h2>Expense Analytics</h2>
+
+            <select id="monthFilter">
+
+                <option value="all">
+                    All Months
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="analytics-grid">
+
+            <div class="chart-card">
+
+                <h3>
+                    Category Spending
+                </h3>
+
+                <canvas id="categoryBarChart">
+                </canvas>
+
+            </div>
+
+
+            <div class="chart-card">
+
+                <h3>
+                    Category Distribution
+                </h3>
+
+                <canvas id="categoryPieChart">
+                </canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="monthly-card">
+
+            <h3>
+                Monthly Spending
+            </h3>
+
+            <canvas id="monthlyChart">
+            </canvas>
+
+        </div>
+
+    </section>
+
+
+    <!-- STATISTICS -->
+
+    <section class="statistics-section">
+
+        <h2>Expense Statistics</h2>
+
+        <div class="statistics-grid">
+
+            <div class="stat-card">
+                <h3>Average Expense</h3>
+                <p id="averageExpense">₹0.00</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Largest Expense</h3>
+                <p id="largestExpense">₹0.00</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Top Category</h3>
+                <p id="topCategory">-</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CATEGORY SUMMARY -->
+
+    <section class="category-section">
+
+        <h2>Category Summary</h2>
+
+        <div id="categorySummary"
+             class="category-container">
+        </div>
+
+    </section>
+
+
+    <!-- INCOME -->
+
+    <section class="form-section">
+
+        <h2>Add Income</h2>
+
+        <form id="incomeForm">
+
+            <input
+                type="number"
+                id="incomeAmount"
+                placeholder="Income Amount"
+                step="0.01"
+                min="0.01"
+                required
+            >
+
+            <input
+                type="text"
+                id="incomeSource"
+                placeholder="Source"
+                required
+            >
+
+            <input
+                type="text"
+                id="incomeDescription"
+                placeholder="Description"
+            >
+
+            <input
+                type="date"
+                id="incomeDate"
+                required
+            >
+
+            <button type="submit">
+                Add Income
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- INCOME TABLE -->
+
+    <section class="table-section">
+
+        <h2>Income Records</h2>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Amount</th>
+                        <th>Source</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="incomeTable">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- EXPENSE FORM -->
+
+    <section class="form-section">
+
+        <h2 id="formTitle">
+            Add Expense
+        </h2>
+
+        <form id="expenseForm">
+
+            <input
+                type="number"
+                id="amount"
+                placeholder="Amount"
+                step="0.01"
+                min="0.01"
+                required
+            >
+
+            <select id="category"
+                    required>
+
+                <option value="">
+                    Select Category
+                </option>
+
+                <option value="Food">
+                    Food
+                </option>
+
+                <option value="Travel">
+                    Travel
+                </option>
+
+                <option value="Education">
+                    Education
+                </option>
+
+                <option value="Shopping">
+                    Shopping
+                </option>
+
+                <option value="Bills">
+                    Bills
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
+            </select>
+
+            <input
+                type="text"
+                id="description"
+                placeholder="Description"
+                maxlength="255"
+            >
+
+            <input
+                type="date"
+                id="expenseDate"
+                required
+            >
+
+            <div class="form-buttons">
+
+                <button
+                    type="submit"
+                    id="submitButton">
+                    Add Expense
+                </button>
+
+                <button
+                    type="button"
+                    id="cancelButton"
+                    class="cancel-button"
+                    onclick="cancelEdit()">
+                    Cancel
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- MONTHLY BUDGET -->
+
+    <section class="budget-section">
+
+        <h2>Monthly Budget</h2>
+
+        <form id="budgetForm">
+
+            <input
+                type="month"
+                id="budgetMonth"
+                required
+            >
+
+            <input
+                type="number"
+                id="budgetAmount"
+                placeholder="Budget Amount"
+                step="0.01"
+                min="0.01"
+                required
+            >
+
+            <button type="submit">
+                Save Budget
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- SEARCH -->
+
+    <section class="search-section">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search category or description..."
+        >
+
+    </section>
+
+
+    <!-- EXPORT -->
+
+    <section class="export-section">
+
+        <h2>Reports</h2>
+
+        <button onclick="exportCSV()">
+            Export CSV
+        </button>
+
+        <button onclick="exportPDF()">
+            Export PDF
+        </button>
+
+    </section>
+
+
+    <!-- EXPENSE TABLE -->
+
+    <section class="table-section">
+
+        <h2>Expenses</h2>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Amount</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="expenseTable">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js">
+</script>
+
+<script src="{{ url_for('static', filename='script.js') }}">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
