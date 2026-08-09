@@ -9,7 +9,7 @@ def get_connection():
     if database_url:
         return psycopg2.connect(database_url)
 
-    # Local development
+    # Local computer PostgreSQL
     return psycopg2.connect(
         host="localhost",
         database="smart_expense_db",
